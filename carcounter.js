@@ -1,10 +1,6 @@
-// Autojen globaali taulukko (mahdollistaa useamman auton lisäämisen)
-let cars = [];
-
-function calculateFuelCost(dist, cons, fuel) {
-    if (isNaN(dist) || isNaN(cons) || isNaN(fuel)) return 0;
-    // Kaava polttoainekululle: (matka * (kulutus / 100)) * litrahinta
-    return (dist * (cons / 100)) * fuel;
+// Autojen globaali taulukko (luodaan vain jos sitä ei ole vielä olemassa)
+if (typeof cars === 'undefined') {
+    var cars = [];
 }
 
 function handleAddCar() {
@@ -12,19 +8,21 @@ function handleAddCar() {
     const dist = parseFloat(document.getElementById('carDist').value);
     const cons = parseFloat(document.getElementById('carCons').value);
     const fuel = parseFloat(document.getElementById('carFuel').value);
+    const payers = parseInt(document.getElementById('carPayers').value);
 
-    if (!name || isNaN(dist) || isNaN(cons) || isNaN(fuel)) {
-        alert("Täytä kaikki auton tiedot kuluja varten!");
+    if (!name || isNaN(dist) || isNaN(cons) || isNaN(fuel) || isNaN(payers)) {
+        alert("Täytä kaikki auton tiedot ja maksajamäärä kuluja varten!");
         return;
     }
 
-    const totalCost = calculateFuelCost(dist, cons, fuel);
+    const totalCost = (dist * (cons / 100)) * fuel;
 
     cars.push({
         id: 'car_' + Date.now(),
         name: name,
         totalCost: totalCost,
-        dist: dist
+        dist: dist,
+        payers: payers
     });
 
     // Tyhjennetään kentät
@@ -32,7 +30,9 @@ function handleAddCar() {
     document.getElementById('carDist').value = '';
     document.getElementById('carCons').value = '';
     document.getElementById('carFuel').value = '';
+    document.getElementById('carPayers').value = '1';
 
-    // Päivitetään pääsovelluksen käyttöliittymä
-    updateUI();
+    // Tallennetaan ja päivitetään
+    if (typeof saveAllData === 'function') saveAllData();
+    if (typeof updateUI === 'function') updateUI();
 }
