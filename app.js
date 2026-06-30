@@ -1,5 +1,5 @@
 // Osallistujien tietokanta
-// Teeman hallinta
+// --- TEEMAN HALLINTA ---
 function toggleTheme() {
     const isDark = document.body.classList.toggle('dark-theme');
     localStorage.setItem('tripTheme', isDark ? 'dark' : 'light');
@@ -13,18 +13,14 @@ function updateThemeButton(isDark) {
     }
 }
 
-// Päivitetään window.onload lataamaan myös teema
-const originalOnload = window.onload || function() {};
-window.onload = function() {
-    originalOnload(); // Suorittaa aiemman latauslogiikan (muistiinpanot, osallistujat jne.)
-    
-    // Tarkistetaan tallennettu teema
+// Tämä funktio ajaa teeman tarkistuksen heti kun sivu on ladattu
+function checkSavedTheme() {
     const savedTheme = localStorage.getItem('tripTheme');
     if (savedTheme === 'dark') {
         document.body.classList.add('dark-theme');
         updateThemeButton(true);
     }
-};
+}
 let participants = [];
 
 // Haetaan kaikki tiedot muistista heti kun sivu latautuu
