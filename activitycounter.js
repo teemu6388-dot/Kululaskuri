@@ -1,13 +1,11 @@
-// Aktiviteettien globaali taulukko
-let activities = [];
+// Aktiviteettien globaali taulukko (luodaan vain jos sitä ei ole vielä olemassa)
+if (typeof activities === 'undefined') {
+    var activities = [];
+}
 
 function calculateActivityCost(pricePerPerson, count, payers) {
     if (isNaN(pricePerPerson) || count <= 0 || payers <= 0) return 0;
-    
-    // UUSI LOGIIKKA: Hinta per pää * osallistujamäärä = Aktiviteetin todellinen kokonaishinta
-    const totalCost = pricePerPerson * count;
-    
-    return totalCost;
+    return pricePerPerson * count;
 }
 
 function handleAddActivity() {
@@ -21,13 +19,12 @@ function handleAddActivity() {
         return;
     }
 
-    // Lasketaan aktiviteetin yhteishinta
     const calculatedTotal = calculateActivityCost(pricePerPerson, count, payers);
 
     activities.push({
         id: 'act_' + Date.now(),
         name: name,
-        totalCost: calculatedTotal, // Tämä kokonaissumma jaetaan tasan ruksattujen kesken
+        totalCost: calculatedTotal,
         basePrice: pricePerPerson,
         count: count,
         payers: payers
@@ -39,7 +36,7 @@ function handleAddActivity() {
     document.getElementById('actCount').value = '1';
     document.getElementById('actPayers').value = '1';
 
-    // Päivitetään ja tallennetaan
-    saveAllData();
-    updateUI();
+    // Tallennetaan ja päivitetään (nämä funktiot löytyvät app.js-tiedostosta)
+    if (typeof saveAllData === 'function') saveAllData();
+    if (typeof updateUI === 'function') updateUI();
 }
