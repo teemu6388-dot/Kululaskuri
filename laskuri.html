@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reissun Kululaskuri</title>
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#059669">
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker rekisteröity!', reg))
+        .catch(err => console.err('Service Worker virhe:', err));
+    });
+  }
+</script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Reissun Kululaskuri & Aktiviteetit</h1>
+
+    <div class="grid">
+        
+        <div class="card">
+            <h2>1. Lisää osallistujat</h2>
+            <div class="form-group">
+                <label for="partName">Osallistujan nimi</label>
+                <input type="text" id="partName" placeholder="Esim. Matti">
+            </div>
+            <button onclick="addParticipant()">Lisää osallistuja</button>
+        </div>
+
+        <div class="card">
+    <h2>2. Lisää aktiviteetti</h2>
+    <div class="form-group">
+        <label for="actName">Aktiviteetin nimi</label>
+        <input type="text" id="actName" placeholder="Esim. Karting, Liput...">
+    </div>
+    <div class="form-group">
+        <label for="actPrice">Hinta per henkilö (€ / pää)</label>
+        <input type="number" id="actPrice" step="0.01" placeholder="0.00">
+    </div>
+    <div class="form-group">
+        <label for="actCount">Osallistujamäärä (kuinka monta henkilöä osallistuu)</label>
+        <input type="number" id="actCount" value="1" min="1">
+    </div>
+    <div class="form-group">
+        <label for="actPayers">Maksajien määrä (kuinka moni osallistuu maksuun)</label>
+        <input type="number" id="actPayers" value="1" min="1">
+    </div>
+    <button onclick="handleAddActivity()">Lisää aktiviteetti</button>
+</div>
+
+        <div class="card">
+    <h2>3. Lisää auto / Matkakulut</h2>
+    <div class="form-group">
+        <label for="carName">Auton / Matkan nimi</label>
+        <input type="text" id="carName" placeholder="Esim. Matin auto, Bussi...">
+    </div>
+    <div class="form-group">
+        <label for="carDist">Matkan pituus (km)</label>
+        <input type="number" id="carDist" placeholder="Esim. 250">
+    </div>
+    <div class="form-group">
+        <label for="carCons">Keskikulutus (l/100km)</label>
+        <input type="number" id="carCons" step="0.1" placeholder="Esim. 6.5">
+    </div>
+    <div class="form-group">
+        <label for="carFuel">Polttoaineen hinta (€/l)</label>
+        <input type="number" id="carFuel" step="0.001" placeholder="Esim. 1.85">
+    </div>
+    <div class="form-group">
+        <label for="carPayers">Kuinka moni osallistuu auton kulujen maksuun?</label>
+        <input type="number" id="carPayers" value="1" min="1">
+    </div>
+    <button onclick="handleAddCar()">Lisää auto</button>
+</div>
+
+        <div class="card">
+            <h2>Muistiinpanot</h2>
+            <textarea id="notes" rows="10" placeholder="Kirjoita tähän muistiinpanoja reissusta, aikatauluista..." oninput="saveNotes()"></textarea>
+        </div>
+
+        <div class="card full-width">
+            <h2>4. Kulujen jakaminen ja yhteenveto</h2>
+            <p class="instruction">
+                Ruksi alta kunkin henkilön kohdalta ne aktiviteetit ja autot, joissa hän on mukana. Hinnat jaetaan tasan ruksattujen kesken.
+            </p>
+            <div id="participantsList"></div>
+        </div>
+
+        <div class="card">
+            <h3>Syötetyt Aktiviteetit</h3>
+            <div id="activitiesList"></div>
+        </div>
+
+        <div class="card">
+            <h3>Syötetyt Autot</h3>
+            <div id="carsList"></div>
+        </div>
+
+    </div>
+</div>
+
+<script src="activityCounter.js"></script>
+<script src="carCounter.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
