@@ -1,4 +1,3 @@
-// Osallistujien tietokanta
 // --- TEEMAN HALLINTA ---
 function toggleTheme() {
     const isDark = document.body.classList.toggle('dark-theme');
@@ -13,7 +12,6 @@ function updateThemeButton(isDark) {
     }
 }
 
-// Tämä funktio ajaa teeman tarkistuksen heti kun sivu on ladattu
 function checkSavedTheme() {
     const savedTheme = localStorage.getItem('tripTheme');
     if (savedTheme === 'dark') {
@@ -21,30 +19,29 @@ function checkSavedTheme() {
         updateThemeButton(true);
     }
 }
+
+// --- SOVELLUKSEN DATA ---
 let participants = [];
 
 // Haetaan kaikki tiedot muistista heti kun sivu latautuu
 window.onload = function() {
-    // Ladataan muistiinpanot
     if (localStorage.getItem('tripNotes')) {
         document.getElementById('notes').value = localStorage.getItem('tripNotes');
     }
-    // Ladataan osallistujat
     if (localStorage.getItem('tripParticipants')) {
         participants = JSON.parse(localStorage.getItem('tripParticipants'));
     }
-    // Ladataan aktiviteetit
     if (localStorage.getItem('tripActivities')) {
         activities = JSON.parse(localStorage.getItem('tripActivities'));
     }
-    // Ladataan autot
     if (localStorage.getItem('tripCars')) {
         cars = JSON.parse(localStorage.getItem('tripCars'));
     }
     
-    // TARKISTETAAN TEEMA (Lisätty tähän)
+    // Tarkistetaan teema
     checkSavedTheme();
     
+    // Päivitetään näkymä
     updateUI();
 };
 
@@ -120,31 +117,35 @@ function toggleFreeStatus(partId) {
     updateUI();
 }
 
-// UPDATE-FUNKTIO (Näyttää nyt sekä osallistujat että maksajat erikseen)
+// --- KÄYTTÖLIITTYMÄN PÄIVITYS ---
 function updateUI() {
     // 1. Syötetyt aktiviteetit listaukseen
     const actListDiv = document.getElementById('activitiesList');
-    actListDiv.innerHTML = activities.map(a => `
-        <div class="list-item">
-            <strong>${a.name}</strong><br>
-            Yhteensä: ${a.totalCost.toFixed(2)} € <span style="font-size:11px; color:#64748b;">(${a.basePrice.toFixed(2)}€/pää, ${a.count} kpl)</span>
-            <button class="delete-btn" onclick="deleteItem('act', '${a.id}')">X</button>
-        </div>
-    `).join('');
+    if (actListDiv) {
+        actListDiv.innerHTML = activities.map(a => `
+            <div class="list-item">
+                <strong>${a.name}</strong><br>
+                Yhteensä: ${a.totalCost.toFixed(2)} € <span style="font-size:11px; color:#64748b;">(${a.basePrice.toFixed(2)}€/pää, ${a.count} kpl)</span>
+                <button class="delete-btn" onclick="deleteItem('act', '${a.id}')">X</button>
+            </div>
+        `).join('');
+    }
 
     // 2. Syötetyt autot listaukseen
     const carListDiv = document.getElementById('carsList');
-    carListDiv.innerHTML = cars.map(c => `
-        <div class="list-item">
-            <strong>${c.name}</strong> (${c.dist} km)<br>
-            Polttoainekulu: ${c.totalCost.toFixed(2)} €
-            <button class="delete-btn" onclick="deleteItem('car', '${c.id}')">X</button>
-        </div>
-    `).join('');
+    if (carListDiv) {
+        carListDiv.innerHTML = cars.map(c => `
+            <div class="list-item">
+                <strong>${c.name}</strong> (${c.dist} km)<br>
+                Polttoainekulu: ${c.totalCost.toFixed(2)} €
+                <button class="delete-btn" onclick="deleteItem('car', '${c.id}')">X</button>
+            </div>
+        `).join('');
+    }
 
     // 3. Lasketaan erikseen kokonaisosallistujat ja maksavat osallistujat
-    const actTotalCounts = {}; // Kaikki ruksanneet
-    const actPayerCounts = {}; // Vain maksavat ruksanneet
+    const actTotalCounts = {};
+    const actPayerCounts = {};
     const carTotalCounts = {}; 
     const carPayerCounts = {}; 
 
@@ -164,6 +165,8 @@ function updateUI() {
 
     // 4. Tulostetaan osallistujakortit rasteilla
     const partListDiv = document.getElementById('participantsList');
+    if (!partListDiv) return;
+
     if (participants.length === 0) {
         partListDiv.innerHTML = '<p class="instruction">Ei vielä osallistujia. Lisää henkilöitä kohdasta 1.</p>';
         return;
