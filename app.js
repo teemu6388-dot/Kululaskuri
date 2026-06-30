@@ -25,18 +25,26 @@ let participants = [];
 
 // Haetaan kaikki tiedot muistista heti kun sivu latautuu
 window.onload = function() {
+    // Ladataan muistiinpanot
     if (localStorage.getItem('tripNotes')) {
         document.getElementById('notes').value = localStorage.getItem('tripNotes');
     }
+    // Ladataan osallistujat
     if (localStorage.getItem('tripParticipants')) {
         participants = JSON.parse(localStorage.getItem('tripParticipants'));
     }
+    // Ladataan aktiviteetit
     if (localStorage.getItem('tripActivities')) {
         activities = JSON.parse(localStorage.getItem('tripActivities'));
     }
+    // Ladataan autot
     if (localStorage.getItem('tripCars')) {
         cars = JSON.parse(localStorage.getItem('tripCars'));
     }
+    
+    // TARKISTETAAN TEEMA (Lisätty tähän)
+    checkSavedTheme();
+    
     updateUI();
 };
 
