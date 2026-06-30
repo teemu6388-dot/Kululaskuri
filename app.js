@@ -1,4 +1,9 @@
-// --- TEEMAN HALLINTA ---
+// --- GLОВААLIT MUUTTUJAT ---
+var participants = [];
+if (typeof activities === 'undefined') { var activities = []; }
+if (typeof cars === 'undefined') { var cars = []; }
+
+// --- TEEMAN MANAGEMENT ---
 function toggleTheme() {
     const isDark = document.body.classList.toggle('dark-theme');
     localStorage.setItem('tripTheme', isDark ? 'dark' : 'light');
@@ -20,10 +25,7 @@ function checkSavedTheme() {
     }
 }
 
-// --- SOVELLUKSEN DATA ---
-let participants = [];
-
-// Haetaan kaikki tiedot muistista heti kun sivu latautuu
+// --- DATA JA TALLENNUS ---
 window.onload = function() {
     if (localStorage.getItem('tripNotes')) {
         document.getElementById('notes').value = localStorage.getItem('tripNotes');
@@ -38,10 +40,7 @@ window.onload = function() {
         cars = JSON.parse(localStorage.getItem('tripCars'));
     }
     
-    // Tarkistetaan teema
     checkSavedTheme();
-    
-    // Päivitetään näkymä
     updateUI();
 };
 
@@ -117,21 +116,21 @@ function toggleFreeStatus(partId) {
     updateUI();
 }
 
-// --- KÄYTTÖLIITTYMÄN PÄIVITYS ---
+// --- KÄYTTÖLIITTYMÄ ---
 function updateUI() {
-    // 1. Syötetyt aktiviteetit listaukseen
+    // 1. Aktiviteettilista
     const actListDiv = document.getElementById('activitiesList');
     if (actListDiv) {
         actListDiv.innerHTML = activities.map(a => `
             <div class="list-item">
                 <strong>${a.name}</strong><br>
-                Yhteensä: ${a.totalCost.toFixed(2)} € <span style="font-size:11px; color:#64748b;">(${a.basePrice.toFixed(2)}€/pää, ${a.count} kpl)</span>
+                Yhteensä: ${a.totalCost.toFixed(2)} € <span style="font-size:11px; color:var(--instruction-text);">(${a.basePrice.toFixed(2)}€/pää, ${a.count} kpl)</span>
                 <button class="delete-btn" onclick="deleteItem('act', '${a.id}')">X</button>
             </div>
         `).join('');
     }
 
-    // 2. Syötetyt autot listaukseen
+    // 2. Autolista
     const carListDiv = document.getElementById('carsList');
     if (carListDiv) {
         carListDiv.innerHTML = cars.map(c => `
@@ -143,7 +142,7 @@ function updateUI() {
         `).join('');
     }
 
-    // 3. Lasketaan erikseen kokonaisosallistujat ja maksavat osallistujat
+    // 3. Lasketaan ruksit lennosta
     const actTotalCounts = {};
     const actPayerCounts = {};
     const carTotalCounts = {}; 
@@ -163,7 +162,7 @@ function updateUI() {
         });
     });
 
-    // 4. Tulostetaan osallistujakortit rasteilla
+    // 4. Osallistujakortit
     const partListDiv = document.getElementById('participantsList');
     if (!partListDiv) return;
 
@@ -176,7 +175,6 @@ function updateUI() {
     participants.forEach(p => {
         let totalToPay = 0;
 
-        // Aktiviteettien valintaruudut
         let actCheckboxes = activities.map(a => {
             const isChecked = p.selectedActivities.includes(a.id) ? 'checked' : '';
             const totalIn = actTotalCounts[a.id] || 0;
@@ -194,7 +192,6 @@ function updateUI() {
             `;
         }).join('');
 
-        // Autojen valintaruudut
         let carCheckboxes = cars.map(c => {
             const isChecked = p.selectedCars.includes(c.id) ? 'checked' : '';
             const totalIn = carTotalCounts[c.id] || 0;
@@ -213,7 +210,7 @@ function updateUI() {
         }).join('');
 
         const isFreeChecked = p.isFreeFromPayments ? 'checked' : '';
-        const cardStyle = p.isFreeFromPayments ? 'background: #f1f5f9; opacity: 0.85;' : '';
+        const cardStyle = p.isFreeFromPayments ? 'background: var(--list-item-bg); opacity: 0.75;' : '';
 
         html += `
             <div class="participant-card" style="${cardStyle}">
@@ -224,7 +221,7 @@ function updateUI() {
                     </div>
                     
                     <div style="display:flex; align-items:center; gap:15px;">
-                        <label class="checkbox-label" style="font-size:12px; color:#475569; font-weight:600;">
+                        <label class="checkbox-label" style="font-size:12px; color:var(--text); font-weight:600;">
                             <input type="checkbox" ${isFreeChecked} onchange="toggleFreeStatus('${p.id}')">
                             Vapauta maksuista
                         </label>
@@ -233,17 +230,17 @@ function updateUI() {
                 </div>
                 
                 <div style="margin-top:10px;">
-                    <span style="font-size:12px; font-weight:bold; color:#475569;">Aktiviteetit:</span>
+                    <span style="font-size:12px; font-weight:bold; color:var(--text);">Aktiviteetit:</span>
                     <div class="checkbox-group">${actCheckboxes || '<span class="instruction">Ei aktiviteetteja</span>'}</div>
                 </div>
 
                 <div style="margin-top:10px;">
-                    <span style="font-size:12px; font-weight:bold; color:#475569;">Autokyydit:</span>
+                    <span style="font-size:12px; font-weight:bold; color:var(--text);">Autokyydit:</span>
                     <div class="checkbox-group">${carCheckboxes || '<span class="instruction">Ei autoja</span>'}</div>
                 </div>
 
-                <div class="summary-box" style="${p.isFreeFromPayments ? 'border-color:#cbd5e1; background:#f8fafc;' : ''}">
-                    Henkilön <strong>${p.name}</strong> maksuosuus: <span class="total-price" style="${p.isFreeFromPayments ? 'color:#64748b;' : ''}">${totalToPay.toFixed(2)} €</span>
+                <div class="summary-box" style="${p.isFreeFromPayments ? 'border-color:var(--border); background:var(--list-item-bg);' : ''}">
+                    Henkilön <strong>${p.name}</strong> maksuosuus: <span class="total-price" style="${p.isFreeFromPayments ? 'color:var(--instruction-text);' : ''}">${totalToPay.toFixed(2)} €</span>
                 </div>
             </div>
         `;
